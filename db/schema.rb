@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_10_200201) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_11_170100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "handling_deficits", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "deficit", null: false
+    t.string "location", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "working_session_id", null: false
+    t.index ["working_session_id"], name: "index_handling_deficits_on_working_session_id"
+  end
 
   create_table "working_sessions", force: :cascade do |t|
     t.string "car_id", null: false
@@ -20,4 +29,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_10_200201) do
     t.string "track_id", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "handling_deficits", "working_sessions"
 end
