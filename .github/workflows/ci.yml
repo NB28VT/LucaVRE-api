@@ -33,8 +33,11 @@ jobs:
         with:
           bundler-cache: true # Caches gems so your tests run blazing fast next time
 
-      # - name: Prepare Database Schema TEMPORARILY DISABLED before initial DB setup
-      #   run: bin/rails db:schema:load
+      - name: Set up database schema
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:password@localhost:5432/luca_vre_test
+        run: bin/rails db:prepare
 
       - name: Run RSpec Test Suite
         run: bundle exec rspec
