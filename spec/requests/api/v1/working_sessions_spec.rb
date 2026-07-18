@@ -12,7 +12,7 @@ RSpec.describe "WorkingSessions API", type: :request do
       body = JSON.parse(response.body)
       expect(body.size).to eq(2)
       expect(body.map { |ws| ws["id"] }).to match_array(working_sessions.map(&:id))
-      expect(body.first.keys).to match_array(%w[id carId trackId createdAt])
+      expect(body.first.keys).to match_array(%w[id carId trackId createdAt track car])
     end
 
     it "returns an empty array when there are no working sessions" do
