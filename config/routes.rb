@@ -18,6 +18,7 @@ Rails.application.routes.draw do
         resources :handling_deficits, only: [:index, :create, :show, :update, :destroy], shallow: true
       end
       resources :cars, only: [:index]
+      resources :tracks, only: [:index]
     end
   end
 end
