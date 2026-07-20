@@ -20,7 +20,7 @@ gem "jbuilder"
 # Curated for our architcture
 # For JSON serialization
 gem 'alba', '>= 3.10'
-gem "anthropic", "~> 1.55.0"
+gem "anthropic", "~> 1.56.0"
 gem 'active_hash'
 
 
