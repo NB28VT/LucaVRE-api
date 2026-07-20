@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       resources :working_sessions, only: [:index, :show, :create, :update, :destroy] do
         resources :handling_deficits, only: [:index, :create, :show, :update, :destroy], shallow: true
       end
+      resources :cars, only: [:index]
     end
   end
 end
