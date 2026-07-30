@@ -37,6 +37,30 @@ RSpec.describe HandlingDeficit, type: :model do
       end
     end
 
+    it 'is invalid with a location already used for the same working session' do
+      working_session = create(:working_session)
+      create(:handling_deficit, working_session: working_session, location: 'global')
+      handling_deficit = build(:handling_deficit, working_session: working_session, location: 'global')
+
+      expect(handling_deficit).not_to be_valid
+      expect(handling_deficit.errors[:location]).to include('has already been taken')
+    end
+
+    it 'is valid with the same location for a different working session' do
+      create(:handling_deficit, location: 'global')
+      handling_deficit = build(:handling_deficit, location: 'global')
+
+      expect(handling_deficit).to be_valid
+    end
+
+    it 'is valid with a different location for the same working session' do
+      working_session = create(:working_session)
+      create(:handling_deficit, working_session: working_session, location: 'global')
+      handling_deficit = build(:handling_deficit, working_session: working_session, location: 'high_speed')
+
+      expect(handling_deficit).to be_valid
+    end
+
     it 'is invalid with a deficit other than oversteer, understeer or balanced' do
       handling_deficit = build(:handling_deficit, deficit: 'wobbly')
 

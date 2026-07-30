@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_11_170100) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_30_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,7 +20,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_11_170100) do
     t.string "location", null: false
     t.datetime "updated_at", null: false
     t.bigint "working_session_id", null: false
-    t.index ["working_session_id"], name: "index_handling_deficits_on_working_session_id"
+    t.index ["working_session_id", "location"], name: "index_handling_deficits_on_working_session_id_and_location", unique: true
   end
 
   create_table "working_sessions", force: :cascade do |t|

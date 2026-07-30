@@ -4,7 +4,10 @@ RSpec.describe "HandlingDeficits API", type: :request do
   describe "GET /api/v1/working_sessions/:working_session_id/handling_deficits" do
     it "returns all handling deficits for the working session serialized with camelCase keys" do
       working_session = create(:working_session)
-      handling_deficits = create_list(:handling_deficit, 2, working_session: working_session)
+      handling_deficits = [
+        create(:handling_deficit, working_session: working_session, location: 'global'),
+        create(:handling_deficit, working_session: working_session, location: 'high_speed')
+      ]
 
       get "/api/v1/working_sessions/#{working_session.id}/handling_deficits"
 
@@ -112,6 +115,19 @@ RSpec.describe "HandlingDeficits API", type: :request do
 
       expect(response).to have_http_status(:not_found)
     end
+
+    it "returns unprocessable_content when the location is already used for the working session" do
+      working_session = create(:working_session)
+      create(:handling_deficit, working_session: working_session, location: "global")
+
+      expect {
+        post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
+             params: { handling_deficit: { location: "global", deficit: "understeer" } }
+      }.not_to change(HandlingDeficit, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(JSON.parse(response.body)["errors"]).to include("Location has already been taken")
+    end
   end
 
   describe "PATCH /api/v1/handling_deficits/:id" do
@@ -142,6 +158,18 @@ RSpec.describe "HandlingDeficits API", type: :request do
       patch "/api/v1/handling_deficits/does-not-exist", params: { handling_deficit: { deficit: "understeer" } }
 
       expect(response).to have_http_status(:not_found)
+    end
+
+    it "returns unprocessable_content when updating to a location already used in the working session" do
+      working_session = create(:working_session)
+      create(:handling_deficit, working_session: working_session, location: "global")
+      handling_deficit = create(:handling_deficit, working_session: working_session, location: "high_speed")
+
+      patch "/api/v1/handling_deficits/#{handling_deficit.id}",
+            params: { handling_deficit: { location: "global" } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(JSON.parse(response.body)).to have_key("errors")
     end
   end
 
