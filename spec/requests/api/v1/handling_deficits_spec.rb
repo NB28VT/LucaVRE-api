@@ -73,14 +73,14 @@ RSpec.describe "HandlingDeficits API", type: :request do
 
       expect {
         post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-             params: { handling_deficit: { location: "trackwide", deficit: "oversteer" } }
+             params: { handling_deficit: { location: "global", deficit: "oversteer" } }
       }.to change(HandlingDeficit, :count).by(1)
 
       expect(response).to have_http_status(:created)
 
       body = JSON.parse(response.body)
       expect(body["workingSessionId"]).to eq(working_session.id)
-      expect(body["location"]).to eq("trackwide")
+      expect(body["location"]).to eq("global")
       expect(body["deficit"]).to eq("oversteer")
     end
 
@@ -88,7 +88,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
       working_session = create(:working_session)
 
       post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-           params: { handling_deficit: { location: "trackwide", deficit: "oversteer", id: 999 } }
+           params: { handling_deficit: { location: "global", deficit: "oversteer", id: 999 } }
 
       expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)["id"]).not_to eq(999)
@@ -108,7 +108,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
 
     it "returns a 404 when the working session does not exist" do
       post "/api/v1/working_sessions/does-not-exist/handling_deficits",
-           params: { handling_deficit: { location: "trackwide", deficit: "oversteer" } }
+           params: { handling_deficit: { location: "global", deficit: "oversteer" } }
 
       expect(response).to have_http_status(:not_found)
     end
@@ -116,7 +116,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
 
   describe "PATCH /api/v1/handling_deficits/:id" do
     it "updates the location and deficit" do
-      handling_deficit = create(:handling_deficit, location: "trackwide", deficit: "oversteer")
+      handling_deficit = create(:handling_deficit, location: "global", deficit: "oversteer")
 
       patch "/api/v1/handling_deficits/#{handling_deficit.id}",
             params: { handling_deficit: { deficit: "understeer" } }

@@ -22,17 +22,19 @@ RSpec.describe HandlingDeficit, type: :model do
       expect(handling_deficit.errors[:deficit]).to include("can't be blank")
     end
 
-    it 'is invalid with a location other than trackwide' do
+    it 'is invalid with a location not in the allowed list' do
       handling_deficit = build(:handling_deficit, location: 'front')
 
       expect(handling_deficit).not_to be_valid
       expect(handling_deficit.errors[:location]).to include('is not included in the list')
     end
 
-    it 'is valid with a location of trackwide' do
-      handling_deficit = build(:handling_deficit, location: 'trackwide')
+    %w[global high_speed mid_speed low_speed].each do |valid_location|
+      it "is valid with a location of #{valid_location}" do
+        handling_deficit = build(:handling_deficit, location: valid_location)
 
-      expect(handling_deficit).to be_valid
+        expect(handling_deficit).to be_valid
+      end
     end
 
     it 'is invalid with a deficit other than oversteer, understeer or balanced' do

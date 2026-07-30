@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :handling_deficit do
     working_session
-    location { 'trackwide' }
+    location { 'global' }
     deficit { 'oversteer' }
   end
 end
