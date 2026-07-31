@@ -1,8 +1,10 @@
 class HandlingDeficit < ApplicationRecord
   belongs_to :working_session
 
-  validates :location, presence: true,
-                        inclusion: { in: %w[global high_speed mid_speed low_speed] },
-                        uniqueness: { scope: :working_session_id }
+  validates :location, presence: true, inclusion: { in: %w[global high_speed mid_speed low_speed] }
   validates :deficit, presence: true, inclusion: { in: %w[oversteer understeer balanced] }
+
+  validates :phase, presence: true, inclusion: { in: %w[entry mid_corner exit] }, unless: -> { location == 'global' }
+  validates :phase, absence: true, if: -> { location == 'global' }
+  validates :phase, uniqueness: { scope: [:working_session_id, :location] }
 end

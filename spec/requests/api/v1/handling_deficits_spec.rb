@@ -6,7 +6,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
       working_session = create(:working_session)
       handling_deficits = [
         create(:handling_deficit, working_session: working_session, location: 'global'),
-        create(:handling_deficit, working_session: working_session, location: 'high_speed')
+        create(:handling_deficit, working_session: working_session, location: 'high_speed', phase: 'entry')
       ]
 
       get "/api/v1/working_sessions/#{working_session.id}/handling_deficits"
@@ -16,7 +16,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
       body = JSON.parse(response.body)
       expect(body.size).to eq(2)
       expect(body.map { |hd| hd["id"] }).to match_array(handling_deficits.map(&:id))
-      expect(body.first.keys).to match_array(%w[id workingSessionId location deficit createdAt])
+      expect(body.first.keys).to match_array(%w[id workingSessionId location deficit phase createdAt])
     end
 
     it "returns an empty array when the working session has no handling deficits" do
@@ -59,6 +59,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
       expect(body["id"]).to eq(handling_deficit.id)
       expect(body["workingSessionId"]).to eq(handling_deficit.working_session_id)
       expect(body["location"]).to eq(handling_deficit.location)
+      expect(body["phase"]).to eq(handling_deficit.phase)
       expect(body["deficit"]).to eq(handling_deficit.deficit)
     end
 
@@ -116,7 +117,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
-    it "returns unprocessable_content when the location is already used for the working session" do
+    it "returns unprocessable_content when a second global handling deficit is created for the working session" do
       working_session = create(:working_session)
       create(:handling_deficit, working_session: working_session, location: "global")
 
@@ -126,7 +127,59 @@ RSpec.describe "HandlingDeficits API", type: :request do
       }.not_to change(HandlingDeficit, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(JSON.parse(response.body)["errors"]).to include("Location has already been taken")
+      expect(JSON.parse(response.body)["errors"]).to include("Phase has already been taken")
+    end
+
+    it "creates a handling deficit with a phase for a non-global location" do
+      working_session = create(:working_session)
+
+      post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
+           params: { handling_deficit: { location: "high_speed", phase: "entry", deficit: "oversteer" } }
+
+      expect(response).to have_http_status(:created)
+      expect(JSON.parse(response.body)["phase"]).to eq("entry")
+    end
+
+    it "returns unprocessable_content when phase is missing for a non-global location" do
+      working_session = create(:working_session)
+
+      post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
+           params: { handling_deficit: { location: "high_speed", deficit: "oversteer" } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns unprocessable_content when phase is present for a global location" do
+      working_session = create(:working_session)
+
+      post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
+           params: { handling_deficit: { location: "global", phase: "entry", deficit: "oversteer" } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns unprocessable_content when the location and phase combination is already used for the working session" do
+      working_session = create(:working_session)
+      create(:handling_deficit, working_session: working_session, location: "high_speed", phase: "entry")
+
+      expect {
+        post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
+             params: { handling_deficit: { location: "high_speed", phase: "entry", deficit: "understeer" } }
+      }.not_to change(HandlingDeficit, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "creates a second handling deficit for the same location with a different phase" do
+      working_session = create(:working_session)
+      create(:handling_deficit, working_session: working_session, location: "high_speed", phase: "entry")
+
+      expect {
+        post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
+             params: { handling_deficit: { location: "high_speed", phase: "mid_corner", deficit: "understeer" } }
+      }.to change(HandlingDeficit, :count).by(1)
+
+      expect(response).to have_http_status(:created)
     end
   end
 
@@ -163,7 +216,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
     it "returns unprocessable_content when updating to a location already used in the working session" do
       working_session = create(:working_session)
       create(:handling_deficit, working_session: working_session, location: "global")
-      handling_deficit = create(:handling_deficit, working_session: working_session, location: "high_speed")
+      handling_deficit = create(:handling_deficit, working_session: working_session, location: "high_speed", phase: "entry")
 
       patch "/api/v1/handling_deficits/#{handling_deficit.id}",
             params: { handling_deficit: { location: "global" } }
