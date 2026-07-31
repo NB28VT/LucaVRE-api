@@ -16,7 +16,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
       body = JSON.parse(response.body)
       expect(body.size).to eq(2)
       expect(body.map { |hd| hd["id"] }).to match_array(handling_deficits.map(&:id))
-      expect(body.first.keys).to match_array(%w[id workingSessionId location deficit phase createdAt])
+      expect(body.first.keys).to match_array(%w[id workingSessionId location symptom phase createdAt])
     end
 
     it "returns an empty array when the working session has no handling deficits" do
@@ -60,7 +60,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
       expect(body["workingSessionId"]).to eq(handling_deficit.working_session_id)
       expect(body["location"]).to eq(handling_deficit.location)
       expect(body["phase"]).to eq(handling_deficit.phase)
-      expect(body["deficit"]).to eq(handling_deficit.deficit)
+      expect(body["symptom"]).to eq(handling_deficit.symptom)
     end
 
     it "returns a 404 when the handling deficit does not exist" do
@@ -77,7 +77,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
 
       expect {
         post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-             params: { handling_deficit: { location: "global", deficit: "oversteer" } }
+             params: { handling_deficit: { location: "global", symptom: "oversteer" } }
       }.to change(HandlingDeficit, :count).by(1)
 
       expect(response).to have_http_status(:created)
@@ -85,14 +85,14 @@ RSpec.describe "HandlingDeficits API", type: :request do
       body = JSON.parse(response.body)
       expect(body["workingSessionId"]).to eq(working_session.id)
       expect(body["location"]).to eq("global")
-      expect(body["deficit"]).to eq("oversteer")
+      expect(body["symptom"]).to eq("oversteer")
     end
 
     it "ignores unpermitted params via strong params" do
       working_session = create(:working_session)
 
       post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-           params: { handling_deficit: { location: "global", deficit: "oversteer", id: 999 } }
+           params: { handling_deficit: { location: "global", symptom: "oversteer", id: 999 } }
 
       expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)["id"]).not_to eq(999)
@@ -103,7 +103,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
 
       expect {
         post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-             params: { handling_deficit: { location: "front", deficit: "wobbly" } }
+             params: { handling_deficit: { location: "front", symptom: "wobbly" } }
       }.not_to change(HandlingDeficit, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
@@ -112,7 +112,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
 
     it "returns a 404 when the working session does not exist" do
       post "/api/v1/working_sessions/does-not-exist/handling_deficits",
-           params: { handling_deficit: { location: "global", deficit: "oversteer" } }
+           params: { handling_deficit: { location: "global", symptom: "oversteer" } }
 
       expect(response).to have_http_status(:not_found)
     end
@@ -123,7 +123,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
 
       expect {
         post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-             params: { handling_deficit: { location: "global", deficit: "understeer" } }
+             params: { handling_deficit: { location: "global", symptom: "understeer" } }
       }.not_to change(HandlingDeficit, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
@@ -134,7 +134,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
       working_session = create(:working_session)
 
       post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-           params: { handling_deficit: { location: "high_speed", phase: "entry", deficit: "oversteer" } }
+           params: { handling_deficit: { location: "high_speed", phase: "entry", symptom: "oversteer" } }
 
       expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body)["phase"]).to eq("entry")
@@ -144,7 +144,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
       working_session = create(:working_session)
 
       post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-           params: { handling_deficit: { location: "high_speed", deficit: "oversteer" } }
+           params: { handling_deficit: { location: "high_speed", symptom: "oversteer" } }
 
       expect(response).to have_http_status(:unprocessable_content)
     end
@@ -153,7 +153,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
       working_session = create(:working_session)
 
       post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-           params: { handling_deficit: { location: "global", phase: "entry", deficit: "oversteer" } }
+           params: { handling_deficit: { location: "global", phase: "entry", symptom: "oversteer" } }
 
       expect(response).to have_http_status(:unprocessable_content)
     end
@@ -164,7 +164,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
 
       expect {
         post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-             params: { handling_deficit: { location: "high_speed", phase: "entry", deficit: "understeer" } }
+             params: { handling_deficit: { location: "high_speed", phase: "entry", symptom: "understeer" } }
       }.not_to change(HandlingDeficit, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
@@ -176,7 +176,7 @@ RSpec.describe "HandlingDeficits API", type: :request do
 
       expect {
         post "/api/v1/working_sessions/#{working_session.id}/handling_deficits",
-             params: { handling_deficit: { location: "high_speed", phase: "mid_corner", deficit: "understeer" } }
+             params: { handling_deficit: { location: "high_speed", phase: "mid_corner", symptom: "understeer" } }
       }.to change(HandlingDeficit, :count).by(1)
 
       expect(response).to have_http_status(:created)
@@ -184,31 +184,31 @@ RSpec.describe "HandlingDeficits API", type: :request do
   end
 
   describe "PATCH /api/v1/handling_deficits/:id" do
-    it "updates the location and deficit" do
-      handling_deficit = create(:handling_deficit, location: "global", deficit: "oversteer")
+    it "updates the location and symptom" do
+      handling_deficit = create(:handling_deficit, location: "global", symptom: "oversteer")
 
       patch "/api/v1/handling_deficits/#{handling_deficit.id}",
-            params: { handling_deficit: { deficit: "understeer" } }
+            params: { handling_deficit: { symptom: "understeer" } }
 
       expect(response).to have_http_status(:ok)
 
       body = JSON.parse(response.body)
-      expect(body["deficit"]).to eq("understeer")
-      expect(handling_deficit.reload.deficit).to eq("understeer")
+      expect(body["symptom"]).to eq("understeer")
+      expect(handling_deficit.reload.symptom).to eq("understeer")
     end
 
     it "returns unprocessable_content when the update is invalid" do
       handling_deficit = create(:handling_deficit)
 
       patch "/api/v1/handling_deficits/#{handling_deficit.id}",
-            params: { handling_deficit: { deficit: "wobbly" } }
+            params: { handling_deficit: { symptom: "wobbly" } }
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(JSON.parse(response.body)).to have_key("errors")
     end
 
     it "returns a 404 when the handling deficit does not exist" do
-      patch "/api/v1/handling_deficits/does-not-exist", params: { handling_deficit: { deficit: "understeer" } }
+      patch "/api/v1/handling_deficits/does-not-exist", params: { handling_deficit: { symptom: "understeer" } }
 
       expect(response).to have_http_status(:not_found)
     end

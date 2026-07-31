@@ -3,6 +3,6 @@ FactoryBot.define do
     working_session
     location { 'global' }
     phase { nil }
-    deficit { 'oversteer' }
+    symptom { 'oversteer' }
   end
 end

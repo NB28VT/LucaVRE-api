@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe HandlingDeficit, type: :model do
   describe 'validations' do
-    it 'is valid with a location and deficit' do
+    it 'is valid with a location and symptom' do
       handling_deficit = build(:handling_deficit)
 
       expect(handling_deficit).to be_valid
@@ -15,11 +15,11 @@ RSpec.describe HandlingDeficit, type: :model do
       expect(handling_deficit.errors[:location]).to include("can't be blank")
     end
 
-    it 'is invalid without a deficit' do
-      handling_deficit = build(:handling_deficit, deficit: nil)
+    it 'is invalid without a symptom' do
+      handling_deficit = build(:handling_deficit, symptom: nil)
 
       expect(handling_deficit).not_to be_valid
-      expect(handling_deficit.errors[:deficit]).to include("can't be blank")
+      expect(handling_deficit.errors[:symptom]).to include("can't be blank")
     end
 
     it 'is invalid with a location not in the allowed list' do
@@ -120,16 +120,16 @@ RSpec.describe HandlingDeficit, type: :model do
       expect(handling_deficit).to be_valid
     end
 
-    it 'is invalid with a deficit other than oversteer, understeer or balanced' do
-      handling_deficit = build(:handling_deficit, deficit: 'wobbly')
+    it 'is invalid with a symptom other than oversteer or understeer' do
+      handling_deficit = build(:handling_deficit, symptom: 'wobbly')
 
       expect(handling_deficit).not_to be_valid
-      expect(handling_deficit.errors[:deficit]).to include('is not included in the list')
+      expect(handling_deficit.errors[:symptom]).to include('is not included in the list')
     end
 
-    %w[oversteer understeer balanced].each do |valid_deficit|
-      it "is valid with a deficit of #{valid_deficit}" do
-        handling_deficit = build(:handling_deficit, deficit: valid_deficit)
+    %w[oversteer understeer].each do |valid_symptom|
+      it "is valid with a symptom of #{valid_symptom}" do
+        handling_deficit = build(:handling_deficit, symptom: valid_symptom)
 
         expect(handling_deficit).to be_valid
       end
