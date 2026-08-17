@@ -3,12 +3,12 @@ require 'rails_helper'
 RSpec.describe DiagnosticPayloadBuilder do
   describe '#call' do
     context 'with default arguments' do
-      let(:deficits) { [build(:handling_deficit)] }
+      let(:handling_deficits) { '<handling_deficit>loc:hi_spd;phase:entry;sym:us</handling_deficit>' }
       let(:result) do
         described_class.new(
           car_data: 'car xml',
           track_data: 'track xml',
-          handling_deficits: deficits
+          handling_deficits: handling_deficits
         ).call
       end
       let(:content) { result[:messages].first[:content] }
@@ -47,6 +47,7 @@ RSpec.describe DiagnosticPayloadBuilder do
         expect(content[2][:cache_control]).to eq({ type: 'ephemeral' })
         expect(content[2][:text]).to start_with("<handling_deficits>\n")
         expect(content[2][:text]).to end_with("\n</handling_deficits>")
+        expect(content[2][:text]).to include(handling_deficits)
       end
     end
 
@@ -62,14 +63,14 @@ RSpec.describe DiagnosticPayloadBuilder do
       expect(result[:effort]).to eq(described_class::DEFAULT_EFFORT)
     end
 
-    it 'maps handling deficits into shorthand XML' do
-      deficits = [
-        build(:handling_deficit, location: 'global', phase: nil, symptom: 'oversteer'),
-        build(:handling_deficit, location: 'high_speed', phase: 'entry', symptom: 'understeer'),
-        build(:handling_deficit, location: 'mid_speed', phase: 'mid_corner', symptom: 'oversteer')
-      ]
+    it 'wraps a pre-serialized handling deficits string' do
+      handling_deficits = <<~XML.chomp
+        <handling_deficit>loc:glbl;sym:os</handling_deficit>
+        <handling_deficit>loc:hi_spd;phase:entry;sym:us</handling_deficit>
+        <handling_deficit>loc:med_spd;phase:mid;sym:os</handling_deficit>
+      XML
 
-      result = described_class.new(handling_deficits: deficits).call
+      result = described_class.new(handling_deficits: handling_deficits).call
       handling_deficits_text = result[:messages].first[:content][2][:text]
 
       expect(handling_deficits_text).to eq(
