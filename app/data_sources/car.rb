@@ -4,6 +4,14 @@ class Car < ActiveFile::Base
 
   field :name
 
+  def fetch_xml
+    <<~XML
+      <car_profile>
+        <chassis_name>#{name}</chassis_name>
+      </car_profile>
+    XML
+  end
+
   class << self
     def extension
       "json"

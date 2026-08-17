@@ -5,6 +5,14 @@ class Track < ActiveFile::Base
   field :name
   field :parent_circuit
 
+  def fetch_xml
+    <<~XML
+      <track_profile>
+        <track_name>#{name}</track_name>
+      </track_profile>
+    XML
+  end
+
   class << self
     def extension
       "json"
