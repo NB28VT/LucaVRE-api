@@ -29,7 +29,7 @@ RSpec.describe DiagnosticPayloadBuilder do
       it 'wraps car_data in an ephemeral-cached text block' do
         expect(content[0]).to eq(
           type: 'text',
-          text: "<car_data>\ncar xml\n</car_data>",
+          text: "<car_data>\n  car xml\n</car_data>",
           cache_control: { type: 'ephemeral' }
         )
       end
@@ -37,7 +37,7 @@ RSpec.describe DiagnosticPayloadBuilder do
       it 'wraps track_data in an ephemeral-cached text block' do
         expect(content[1]).to eq(
           type: 'text',
-          text: "<track_data>\ntrack xml\n</track_data>",
+          text: "<track_data>\n  track xml\n</track_data>",
           cache_control: { type: 'ephemeral' }
         )
       end
@@ -76,9 +76,9 @@ RSpec.describe DiagnosticPayloadBuilder do
       expect(handling_deficits_text).to eq(
         <<~XML.chomp
           <handling_deficits>
-          <handling_deficit>loc:glbl;sym:os</handling_deficit>
-          <handling_deficit>loc:hi_spd;phase:entry;sym:us</handling_deficit>
-          <handling_deficit>loc:med_spd;phase:mid;sym:os</handling_deficit>
+            <handling_deficit>loc:glbl;sym:os</handling_deficit>
+            <handling_deficit>loc:hi_spd;phase:entry;sym:us</handling_deficit>
+            <handling_deficit>loc:med_spd;phase:mid;sym:os</handling_deficit>
           </handling_deficits>
         XML
       )

@@ -6,7 +6,7 @@ class Track < ActiveFile::Base
   field :parent_circuit
 
   def fetch_xml
-    <<~XML
+    <<~XML.chomp
       <track_profile>
         <track_name>#{name}</track_name>
       </track_profile>

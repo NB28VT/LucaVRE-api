@@ -5,7 +5,7 @@ class Car < ActiveFile::Base
   field :name
 
   def fetch_xml
-    <<~XML
+    <<~XML.chomp
       <car_profile>
         <chassis_name>#{name}</chassis_name>
       </car_profile>

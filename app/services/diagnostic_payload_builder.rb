@@ -6,6 +6,7 @@ class DiagnosticPayloadBuilder
     # TODO: This will read from a file in the config folder
     DEFAULT_SYSTEM_RULES = ""
 
+    # TODO: REMOVE!
     HANDLING_DEFICIT_LOCATION_MAPPING = {
         "high_speed" => "hi_spd",
         "mid_speed" => "med_spd",
@@ -35,21 +36,34 @@ class DiagnosticPayloadBuilder
     def call
         messages_content = [
             {
-                type: "text",
-                text: "<car_data>\n#{@car_data}\n</car_data>",
-                cache_control: { type: "ephemeral" } # First Cache Point
+              type: "text",
+              text: <<~XML,
+                <car_data>
+                  #{@car_data.to_s.chomp}
+                </car_data>
+              XML
+              cache_control: { type: "ephemeral" } # First Cache Point
             },
             {
-                type: "text",
-                text: "<track_data>\n#{@track_data}\n</track_data>",
-                cache_control: { type: "ephemeral" } # Second Cache Point
+              type: "text",
+              text: <<~XML,
+                <track_data>
+                  #{@track_data.to_s.chomp}
+                </track_data>
+              XML
+              cache_control: { type: "ephemeral" } # Second Cache Point
             },
             {
-                type: "text",
-                text: "<handling_deficits>\n#{@handling_deficits}\n</handling_deficits>",
-                cache_control: { type: "ephemeral" } # Third Cache Point
+              type: "text",
+              text: <<~XML,
+                <handling_deficits>
+                  #{@handling_deficits}
+                </handling_deficits>
+              XML
+              cache_control: { type: "ephemeral" } # Third Cache Point
             }
-        ]
+          ]
+          
 
         {
             model: @model,

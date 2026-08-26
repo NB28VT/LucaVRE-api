@@ -67,16 +67,19 @@ module PromptSerializers
       @deficit = deficit
     end
 
-    # Serializers defcits into shorthand codes for the purposes of prompt compression
+    # Serializes defcits into shorthand codes for the purposes of prompt compression
     # e.g. loc:med_spd;phase:mid;sym:os
     def serialize
-      SERIALIZATION_MAPPING.filter_map do |_key, value|
+      serialized = SERIALIZATION_MAPPING.filter_map do |_key, value|
         attribute = value[:attribute]
         raw = @deficit[attribute]
         next if attribute == "phase" && !raw.present?
 
         "#{value[:code]}:#{value[:value_map][raw]}"
       end.join(";")
+
+      # Indent for readability
+      "<handling_deficit>#{serialized}</handling_deficit>"
     end
   end
 end

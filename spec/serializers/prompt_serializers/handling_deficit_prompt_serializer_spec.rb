@@ -29,8 +29,12 @@ RSpec.describe PromptSerializers::HandlingDeficitPromptSerializer do
       build(:handling_deficit, location: 'high_speed', phase: 'entry', symptom: 'understeer')
     end
 
-    it 'returns loc, phase, and sym shorthand segments' do
-      expect(serialized).to eq('loc:hi_spd;phase:entry;sym:us')
+    it 'returns xml formatted handling deficit with loc, phase, and sym shorthand segments' do
+      expect(serialized).to eq(
+        <<~XML.chomp
+          <handling_deficit>loc:hi_spd;phase:entry;sym:us</handling_deficit>
+        XML
+      )
     end
   end
 end
