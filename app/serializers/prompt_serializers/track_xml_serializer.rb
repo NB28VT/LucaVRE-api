@@ -1,4 +1,3 @@
-# app/serializers/prompt_serializers/track_xml_serializer.rb
 require 'builder'
 
 module PromptSerializers
