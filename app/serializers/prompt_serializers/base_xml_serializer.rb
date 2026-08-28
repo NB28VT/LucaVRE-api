@@ -3,4 +3,3 @@ module PromptSerializers
       XML_INDENTATION = 2
     end
   end
-  
