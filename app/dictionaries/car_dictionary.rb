@@ -44,6 +44,5 @@ module Dictionaries
         "prone_to_front_end_lift" => "fel",
         "pendulum_effects" => "pde"
       }.freeze
-    end
   end
-end  
+end
