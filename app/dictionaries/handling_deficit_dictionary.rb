@@ -1,5 +1,11 @@
 module Dictionaries
   module HandlingDeficitDictionary
+    HANDLING_DEFICIT_KEY_MAPPING = {
+      "location" => "loc",
+      "phase" => "phs",
+      "symptom" => "sym"
+    }.freeze
+
     HANDLING_DEFICIT_LOCATION_MAPPING = {
       "high_speed" => "hi_spd",
       "mid_speed" => "med_spd",
