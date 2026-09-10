@@ -40,55 +40,23 @@
         </engineering_compromise_rules>
     </domain_knowledge_guardrails>
 
-    <input_schema>
-        You will receive data for a user working session structured exactly like this template:
-
-        <input_template>
-            <car_profile></car_profile>
-            <track_profile></track_profile>
-            <handling_deficits>
-                <handling_deficit></handling_deficit>
-            </handling_deficits>
-        </input_template>
-
-        The runtime tags will contain compressed metadata keys. Use the definitions and translation dictionaries below to interpret their meanings. Key mappings are listed first for each definition and then value mappings are listed for the key values that will be compressed:
-
-        <car_profile_definition>
-            <description>Metadata on the unique characteristics of the GT3 racing car chassis the user is developing a setup for. </description>
-            <dictionary>
-                <%= render partial: 'prompts/car_rules_dictionary', locals: { car_key_mapping: Dictionaries::CarDictionary::CAR_KEY_MAPPING, engine_placement_mapping: Dictionaries::CarDictionary::ENGINE_PLACEMENT_MAPPING, aero_platform_mapping: Dictionaries::CarDictionary::AERO_PLATFORM_MAPPING, wheelbase_mapping: Dictionaries::CarDictionary::WHEELBASE_MAPPING, primary_quirk_mapping: Dictionaries::CarDictionary::PRIMARY_QUIRK_MAPPING } %>
-            </dictionary>
-        </car_profile_definition>
-
-        <track_profile_definition>
-            <description>Metadata on the unique characteristics of the racing circuit the user is setting up the selected GT3 car for.</description>
-            <dictionary>
-                <%= render partial: 'prompts/track_rules_dictionary', locals: { track_key_mapping: Dictionaries::TrackDictionary::TRACK_KEY_MAPPING, downforce_requirement_mapping: Dictionaries::TrackDictionary::DOWNFORCE_REQUIREMENT_MAPPING, surface_roughness_mapping: Dictionaries::TrackDictionary::SURFACE_ROUGHNESS_MAPPING, curb_intensity_mapping: Dictionaries::TrackDictionary::CURB_INTENSITY_MAPPING, primary_characteristic_mapping: Dictionaries::TrackDictionary::PRIMARY_CHARACTERISTIC_MAPPING } %>
-            </dictionary>
-        </track_profile_definition>
-
-        <handling_deficit_definition>
-            <description>Descriptions of one or more handling problems a user is struggling with. You will use these to suggest setup changes to the car.</description>
-            <dictionary>
-                <%= render partial: 'prompts/handling_deficit_dictionary', locals: { handling_deficit_key_mapping: Dictionaries::HandlingDeficitDictionary::HANDLING_DEFICIT_KEY_MAPPING, handling_deficit_location_mapping: Dictionaries::HandlingDeficitDictionary::HANDLING_DEFICIT_LOCATION_MAPPING, handling_deficit_phase_mapping: Dictionaries::HandlingDeficitDictionary::HANDLING_DEFICIT_PHASE_MAPPING, handling_deficit_symptom_mapping: Dictionaries::HandlingDeficitDictionary::HANDLING_DEFICIT_SYMPTOM_MAPPING } %>
-            </dictionary>
-        </handling_deficit_definition>
-    </input_schema>
-
-    <!-- TODO: -->
-    <!-- <edge_case_handling>
-        Dealing with contradictory inputs
-    </edge_case_handling>
-
-    <response_constraints>
-        Forbidding commentary outside of thinking response is separate key
-    </response_constraints>
-    Give direct examples of expected outputs for a given input
-    <few_shot_examples>
-        <example>
-            <input></input>
-            <output></output>
-            <reasoning></reasoning>
-        </example>
-    </few_shot_examples> -->
+    <payload_specification>
+        <description>
+            The upcoming metadata paylod represents a working session. It will contain explicit nodes for a car_profile, a track_profile, and multiple handling_deficits. The handling_deficits tag will contain multiple handling_deficit tags, each containing the 
+        </description>
+        <compression_notice>
+            To save token bandwidth, all of the metadata within these tags utilizes strict compression keys. You must interpret these runtime keys using the translation dictionaries provided below. For example, if a car_profile tag translates to "ep:fr;ap:ps;wb:sh;pq:loo", that means "engine placement: front engine rear wheel drive, aero platform: pitch sensitive, wheelbase: short, primary quick: lift-off oversteer"
+        </compression_notice>
+        <translation_dictionaries>
+            <car_profile_translation_dictionary>
+                <%= render partial: 'prompts/car_rules_dictionary', locals: { car_key_mapping: CarDictionary::CAR_KEY_MAPPING, engine_placement_mapping: CarDictionary::ENGINE_PLACEMENT_MAPPING, aero_platform_mapping: CarDictionary::AERO_PLATFORM_MAPPING, wheelbase_mapping: CarDictionary::WHEELBASE_MAPPING, primary_quirk_mapping: CarDictionary::PRIMARY_QUIRK_MAPPING } %>
+            </car_profile_translation_dictionary>
+            <track_profile_translation_dictionary>
+                <%= render partial: 'prompts/track_rules_dictionary', locals: { track_key_mapping: TrackDictionary::TRACK_KEY_MAPPING, downforce_requirement_mapping: TrackDictionary::DOWNFORCE_REQUIREMENT_MAPPING, surface_roughness_mapping: TrackDictionary::SURFACE_ROUGHNESS_MAPPING, curb_intensity_mapping: TrackDictionary::CURB_INTENSITY_MAPPING, primary_characteristic_mapping: TrackDictionary::PRIMARY_CHARACTERISTIC_MAPPING } %>
+            </track_profile_translation_dictionary>
+            <handling_deficit_translation_dictionary>
+                <%= render partial: 'prompts/handling_deficit_dictionary', locals: { handling_deficit_key_mapping: HandlingDeficitDictionary::HANDLING_DEFICIT_KEY_MAPPING, handling_deficit_location_mapping: HandlingDeficitDictionary::HANDLING_DEFICIT_LOCATION_MAPPING, handling_deficit_phase_mapping: HandlingDeficitDictionary::HANDLING_DEFICIT_PHASE_MAPPING, handling_deficit_symptom_mapping: HandlingDeficitDictionary::HANDLING_DEFICIT_SYMPTOM_MAPPING } %>
+            </handling_deficit_translation_dictionary>
+        </translation_dictionaries>
+    </payload_specification>
 </system_prompt>
