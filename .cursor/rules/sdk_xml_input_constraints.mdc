@@ -1,0 +1,7 @@
+---
+description: Guidelines for generating XML input for the Anthropic SDK
+alwaysApply: true
+---
+- **Scope**: when writing services that generate XML inputs for the Anthropic SDK
+- **XML Formatting Restrictions**: only input semantic, valid XML with clean, human-readable nesting and no uncessary spaces between tags. Indent all nested tags by two spaces, or whatever XML_INDENTATION is defined in app/serializers/prompt_serializers/base_xml_serializer.rb
+- **Testing XML Generation**: When testing XML content, prefer shallow verification of nesting in assertions on static system instruction content defined within `system_prompt`. Do not unecessarily test this static content for exact string matching. However, when testing dynamically generated XML input, such as the dictionary instructions in `system_prompt` that come from the `prompts/car_rules_dictionary` partials, properly test the dynamically generated content matches expected string assertions.
