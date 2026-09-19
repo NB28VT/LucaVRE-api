@@ -1,6 +1,6 @@
 class AnthropicSdkService
   DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5"
-  DEFAULT_MAX_TOKENS = 4096
+  DEFAULT_MAX_TOKENS = 16000
   DEFAULT_EFFORT = "high"
   DEFAULT_THINKING = { type: :adaptive, display: :summarized }.freeze
 
